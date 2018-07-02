@@ -280,3 +280,6 @@ source upgrade-2.1.1000-to-2.1.2000.mysql.sql;
 
 #### Migrate saved Hive queries from Hue to Ambari Hive View
 
+Follow https://community.hortonworks.com/articles/198841/migrate-hive-saved-queries-from-hue-390-of-cdh-572.html
+
+
