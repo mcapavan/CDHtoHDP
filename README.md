@@ -75,11 +75,11 @@ Hue - Config - HDFS Web Interface Role - set to NameNode(<hostname>)
 
 ##### copy hadoop config folder from Namenode
 
-cp -LR /etc/hadoop /tmp/backup/cdh
+cp -pLR /etc/hadoop /tmp/backup/cdh
 
 ##### copy hive config folder from Hive node
 
-cp -LR /etc/hive /tmp/backup/cdh
+cp -pLR /etc/hive /tmp/backup/cdh
 
 Note: Rackawareness is available at /etc/hadoop/conf/topology.map
 
@@ -102,11 +102,11 @@ $ hdfs dfsadmin -saveNamespace
 
 #### Back up NN image
 ```bash
-$ cp -LR /dfs/nn /tmp/backup/cdh
+$ cp -pLR /dfs/nn /tmp/backup/cdh
 ```
 #### Back up SNN image
 ```bash
-$ cp -LR /dfs/snn /tmp/backup/cdh
+$ cp -pLR /dfs/snn /tmp/backup/cdh
 ```
 #### Capture FSCK report 
 
