@@ -307,8 +307,8 @@ ref: https://stackoverflow.com/questions/17599498/block-replication-limits-in-hd
 
 
 Issue 4: Log “The reported blocks 788691 needs additional 118697 blocks to reach the threshold 1.0000 of total blocks 907387.” from /var/log/hadoop/hdfs/hadoop-hdfs-namenode-<NN-Name>.log
-                Solution:
-Run FSCK report for corruptFileBlocks and delete them manually. If the files are more, better delete folder to save time but we may miss few good files.
+
+Solution: Run FSCK report for corruptFileBlocks and delete them manually. If the files are more, better delete folder to save time but we may miss few good files.
 ```bash
 $ hdfs fsck / -list-corruptfileblocks
 ```
@@ -324,12 +324,13 @@ Ref: https://community.hortonworks.com/articles/177373/faqs-on-hdp-gpl-repositor
 
 Issue 6: Hive Migration: LZO is not enabled: error “java.io.IOException: No LZO codec found, cannot run”
 
-Solution: add values as "com.hadoop.compression.lzo.LzoCodec,com.hadoop.compression.lzo.LzopCodec" to propertie io.compression.codecs. Also add value as "com.hadoop.compression.lzo.LzoCodec" to custom property io.compression.codec.lzo.class. Restart all services and logoff and login to Ambari. Hortonworks HCC article says only com.hadoop.compression.lzo.LzoCodec (ref: https://docs.hortonworks.com/HDPDocuments/Ambari-2.6.0.0/bk_ambari-administration/content/configure_core-sitexml_for_lzo.html) but if customer creates file with lzopCodec then both LzoCodec and LzopCodec needs to be added.
+Solution: add values as ```text "com.hadoop.compression.lzo.LzoCodec,com.hadoop.compression.lzo.LzopCodec"``` to propertie ```text io.compression.codecs ```. Also add value as ```text "com.hadoop.compression.lzo.LzoCodec" ``` to custom ```text property io.compression.codec.lzo.class``` . Restart all services and logoff and login to Ambari. Hortonworks HCC article says only com.hadoop.compression.lzo.LzoCodec (ref: https://docs.hortonworks.com/HDPDocuments/Ambari-2.6.0.0/bk_ambari-administration/content/configure_core-sitexml_for_lzo.html) but if customer creates file with lzopCodec then both LzoCodec and LzopCodec needs to be added.
 
 Ref: https://cwiki.apache.org/confluence/display/Hive/LanguageManual+LZO#LanguageManualLZO-Lzo/LzopInstallations
 
 
 Issue 7: Hue Migration: Hue migration is partially completed. Like Beewax, Oozie, etc hue related components are failed to install. Check the output of $yum install hue carefully to figure out the missing packages as the final output of Hue installation says successful.
+
 Solution: Python-setuptools are missing.
 
 ```bash
@@ -348,7 +349,7 @@ Notes:
 
 1. Make sure you don’t change the Namespace HA entry in Hive Database. We stop HA from CDH NameNode and don’t make any changes to Hive (leave the hive testing as it wouldn’t work due to HA removal). Complete HDP HDFS migration and add HA before Hive Migration.
 2. Make sure uninstall CDH before handover the system to ansible builds
-3. Capture proper topology configuration sheet which can be used directly during the migration – something like ```text curl -u admin:admin -H "X-Requested-By: ambari" -i -X PUT -d '{"Hosts" : {"rack_info" : "/rack0"}}' http://pchalla0.field.hortonworks.com:8080/api/v1/clusters/uds_ref/hosts/pchalla0.field.hortonworks.com ```
+3. Capture proper topology configuration sheet which can be used directly during the migration – something like ```curl -u admin:admin -H "X-Requested-By: ambari" -i -X PUT -d '{"Hosts" : {"rack_info" : "/rack0"}}' http://pchalla0.field.hortonworks.com:8080/api/v1/clusters/uds_ref/hosts/pchalla0.field.hortonworks.com```
 4. Check the log before we start the migration ```bash $ tail -f /var/log/hadoop/hdfs/hadoop-hdfs-namenode-<NN-Name>.log ```
 5. Keep the for-loop scripts to remove directories (/etc/hadoop), alternatives (/app/cloudera), etc
 6. Remember to open HiveView and HiveView2 before Hue migration
