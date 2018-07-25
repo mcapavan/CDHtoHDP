@@ -282,4 +282,73 @@ source upgrade-2.1.1000-to-2.1.2000.mysql.sql;
 
 Follow https://community.hortonworks.com/articles/198841/migrate-hive-saved-queries-from-hue-390-of-cdh-572.html
 
+### Issues during migration
 
+Issue 1: MySQL ambari_db password has @ and only - or _ are allowed in password string while setting up Ambari.
+
+Solution: Changed the DB password without @
+
+
+Issue2: Removed users like Hive, HDFS, etc …
+
+Solution: Do not remove users. Remove directories (/etc/hadoop), alternatives (/app/cloudera) only
+
+
+Issue 3: On CDH, 30K files are in process to delete and NameNode has been restarted by Operations team. It has caused 150K blocks missing/corrupted. Due to time concerns, CDH to HDP migration has been taken place without removing the corrupted files. Post migration, HDFS is recovering only 6 files in 1.5 seconds.
+Solution: Add below configurations to HDFS to increase the files from 6 to 300 in 1.5 seconds. It can be increased further depends on the number of missing blocks.
+
+```text
+dfs.namenode.replication.work.multiplier.per.iteration=100 (default is 2)
+dfs.namenode.replication.max-streams=200 (default is 4)
+dfs.namenode.replication.max-streams-hard-limit=100 (default is 2)
+``` 
+ 
+ref: https://stackoverflow.com/questions/17599498/block-replication-limits-in-hdfs
+
+
+Issue 4: Log “The reported blocks 788691 needs additional 118697 blocks to reach the threshold 1.0000 of total blocks 907387.” from /var/log/hadoop/hdfs/hadoop-hdfs-namenode-<NN-Name>.log
+                Solution:
+Run FSCK report for corruptFileBlocks and delete them manually. If the files are more, better delete folder to save time but we may miss few good files.
+```bash
+$ hdfs fsck / -list-corruptfileblocks
+```
+Ref: https://community.hortonworks.com/questions/50598/how-to-remove-corrupted-blocks-from-hdfs.html
+                
+                
+Issue 5: No package found for hadooplzo_${stack_version}(hadooplzo_(\d|_)+$)
+
+Solution: Makesure HDP-GPL repo is available
+
+Ref: https://community.hortonworks.com/articles/177373/faqs-on-hdp-gpl-repository.html
+
+
+Issue 6: Hive Migration: LZO is not enabled: error “java.io.IOException: No LZO codec found, cannot run”
+
+Solution: add values as "com.hadoop.compression.lzo.LzoCodec,com.hadoop.compression.lzo.LzopCodec" to propertie io.compression.codecs. Also add value as "com.hadoop.compression.lzo.LzoCodec" to custom property io.compression.codec.lzo.class. Restart all services and logoff and login to Ambari. Hortonworks HCC article says only com.hadoop.compression.lzo.LzoCodec (ref: https://docs.hortonworks.com/HDPDocuments/Ambari-2.6.0.0/bk_ambari-administration/content/configure_core-sitexml_for_lzo.html) but if customer creates file with lzopCodec then both LzoCodec and LzopCodec needs to be added.
+
+Ref: https://cwiki.apache.org/confluence/display/Hive/LanguageManual+LZO#LanguageManualLZO-Lzo/LzopInstallations
+
+
+Issue 7: Hue Migration: Hue migration is partially completed. Like Beewax, Oozie, etc hue related components are failed to install. Check the output of $yum install hue carefully to figure out the missing packages as the final output of Hue installation says successful.
+Solution: Python-setuptools are missing.
+
+```bash
+$ yum install python-setuptools
+```
+
+
+Issue 8: HuetoHiveMigration: Underneath Database is unable to connect for Ambari / Hue databases
+
+Solution: It is due to wrong password cached at the first attempt. Restart Ambari to reflect new configurations.
+
+
+### Notes to remember:
+
+Notes:
+
+1. Make sure you don’t change the Namespace HA entry in Hive Database. We stop HA from CDH NameNode and don’t make any changes to Hive (leave the hive testing as it wouldn’t work due to HA removal). Complete HDP HDFS migration and add HA before Hive Migration.
+2. Make sure uninstall CDH before handover the system to ansible builds
+3. Capture proper topology configuration sheet which can be used directly during the migration – something like ```text curl -u admin:admin -H "X-Requested-By: ambari" -i -X PUT -d '{"Hosts" : {"rack_info" : "/rack0"}}' http://pchalla0.field.hortonworks.com:8080/api/v1/clusters/uds_ref/hosts/pchalla0.field.hortonworks.com ```
+4. Check the log before we start the migration ```bash $ tail -f /var/log/hadoop/hdfs/hadoop-hdfs-namenode-<NN-Name>.log ```
+5. Keep the for-loop scripts to remove directories (/etc/hadoop), alternatives (/app/cloudera), etc
+6. Remember to open HiveView and HiveView2 before Hue migration
