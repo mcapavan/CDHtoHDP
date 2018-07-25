@@ -324,7 +324,7 @@ Ref: https://community.hortonworks.com/articles/177373/faqs-on-hdp-gpl-repositor
 
 Issue 6: Hive Migration: LZO is not enabled: error “java.io.IOException: No LZO codec found, cannot run”
 
-Solution: add values as ```text "com.hadoop.compression.lzo.LzoCodec,com.hadoop.compression.lzo.LzopCodec"``` to propertie ```text io.compression.codecs ```. Also add value as ```text "com.hadoop.compression.lzo.LzoCodec" ``` to custom ```text property io.compression.codec.lzo.class``` . Restart all services and logoff and login to Ambari. Hortonworks HCC article says only com.hadoop.compression.lzo.LzoCodec (ref: https://docs.hortonworks.com/HDPDocuments/Ambari-2.6.0.0/bk_ambari-administration/content/configure_core-sitexml_for_lzo.html) but if customer creates file with lzopCodec then both LzoCodec and LzopCodec needs to be added.
+Solution: add values as ``` "com.hadoop.compression.lzo.LzoCodec,com.hadoop.compression.lzo.LzopCodec"``` to propertie ``` io.compression.codecs ```. Also add value as ``` "com.hadoop.compression.lzo.LzoCodec" ``` to custom ``` property io.compression.codec.lzo.class``` . Restart all services and logoff and login to Ambari. Hortonworks HCC article says only com.hadoop.compression.lzo.LzoCodec (ref: https://docs.hortonworks.com/HDPDocuments/Ambari-2.6.0.0/bk_ambari-administration/content/configure_core-sitexml_for_lzo.html) but if customer creates file with lzopCodec then both LzoCodec and LzopCodec needs to be added.
 
 Ref: https://cwiki.apache.org/confluence/display/Hive/LanguageManual+LZO#LanguageManualLZO-Lzo/LzopInstallations
 
