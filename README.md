@@ -350,6 +350,6 @@ Notes:
 1. Make sure you don’t change the Namespace HA entry in Hive Database. We stop HA from CDH NameNode and don’t make any changes to Hive (leave the hive testing as it wouldn’t work due to HA removal). Complete HDP HDFS migration and add HA before Hive Migration.
 2. Make sure uninstall CDH before handover the system to ansible builds
 3. Capture proper topology configuration sheet which can be used directly during the migration – something like ```curl -u admin:admin -H "X-Requested-By: ambari" -i -X PUT -d '{"Hosts" : {"rack_info" : "/rack0"}}' http://pchalla0.field.hortonworks.com:8080/api/v1/clusters/uds_ref/hosts/pchalla0.field.hortonworks.com```
-4. Check the log before we start the migration ```bash $ tail -f /var/log/hadoop/hdfs/hadoop-hdfs-namenode-<NN-Name>.log ```
+4. Check the log before we start the migration ``` $ tail -f /var/log/hadoop/hdfs/hadoop-hdfs-namenode-<NN-Name>.log ```
 5. Keep the for-loop scripts to remove directories (/etc/hadoop), alternatives (/app/cloudera), etc
 6. Remember to open HiveView and HiveView2 before Hue migration
