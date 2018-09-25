@@ -282,6 +282,12 @@ source upgrade-2.1.1000-to-2.1.2000.mysql.sql;
 
 Follow https://community.hortonworks.com/articles/198841/migrate-hive-saved-queries-from-hue-390-of-cdh-572.html
 
+### LDAP User Sync on Ambari
+
+```bash
+ambari-server sync-ldap --users /var/lib/ambari-server/resources/users.txt
+```
+
 ### Issues during migration
 
 Issue 1: MySQL ambari_db password has @ and only - or _ are allowed in password string while setting up Ambari.
